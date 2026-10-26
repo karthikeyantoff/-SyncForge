@@ -1,21 +1,35 @@
 import mongoose from 'mongoose';
 import { env } from './env.js';
 
+let cachedConnection = null;
+
 export async function connectDB() {
+  if (mongoose.connection.readyState >= 1) {
+    return mongoose.connection;
+  }
+
+  if (cachedConnection) {
+    return cachedConnection;
+  }
+
   const uri = env.mongoUri;
   try {
-    const conn = await mongoose.connect(uri);
-    console.log(`[Database] MongoDB Atlas Connected: ${conn.connection.host}`);
-    return conn;
+    cachedConnection = await mongoose.connect(uri, {
+      serverSelectionTimeoutMS: 8000,
+      socketTimeoutMS: 45000,
+    });
+    console.log(`[Database] MongoDB Atlas Connected: ${cachedConnection.connection.host}`);
+    return cachedConnection;
   } catch (err) {
     console.error(`[Database Error] Failed to connect to MongoDB: ${err.message}`);
-    if (env.nodeEnv === 'production') {
-      process.exit(1);
-    }
+    cachedConnection = null;
     throw err;
   }
 }
 
 export async function disconnectDB() {
-  await mongoose.disconnect();
+  if (mongoose.connection.readyState !== 0) {
+    await mongoose.disconnect();
+    cachedConnection = null;
+  }
 }

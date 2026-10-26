@@ -5,28 +5,34 @@ import { env } from './config/env.js';
 import { connectDB, disconnectDB } from './config/db.js';
 import { registerSockets } from './sockets/index.js';
 
-async function bootstrap() {
-  await connectDB();
+const app = createApp();
+const server = http.createServer(app);
 
-  const app = createApp();
-  const server = http.createServer(app);
+// Initialize Socket.IO instance
+const io = new Server(server, {
+  cors: {
+    origin: (origin, callback) => callback(null, true),
+    credentials: true,
+  },
+});
 
-  const io = new Server(server, {
-    cors: {
-      origin: [env.clientOrigin, 'http://localhost:5173', 'http://127.0.0.1:5173'],
-      credentials: true,
-    },
-  });
+app.set('io', io);
+registerSockets(io);
 
-  app.set('io', io);
-  registerSockets(io);
+// Standalone execution (Local Development / Persistent Node Server)
+if (!process.env.VERCEL && env.nodeEnv !== 'test') {
+  connectDB()
+    .then(() => {
+      server.listen(env.port, () => {
+        console.log(`[SyncForge Server] Listening on port ${env.port} (${env.nodeEnv})`);
+        console.log(`[SyncForge Health] http://localhost:${env.port}/health`);
+      });
+    })
+    .catch((err) => {
+      console.error('[SyncForge Fatal Error during startup]', err);
+      process.exit(1);
+    });
 
-  server.listen(env.port, () => {
-    console.log(`[SyncForge Server] Listening on port ${env.port} (${env.nodeEnv})`);
-    console.log(`[SyncForge Health] http://localhost:${env.port}/health`);
-  });
-
-  // Graceful shutdown
   const shutdown = async (signal) => {
     console.log(`\n[SyncForge Server] Received ${signal}, closing gracefully...`);
     server.close(async () => {
@@ -40,7 +46,6 @@ async function bootstrap() {
   process.on('SIGINT', () => shutdown('SIGINT'));
 }
 
-bootstrap().catch((err) => {
-  console.error('[SyncForge Fatal Error during bootstrap]', err);
-  process.exit(1);
-});
+// Export app for Vercel Serverless Functions
+export default app;
+export { app, server, io };
