@@ -1,13 +1,16 @@
 import mongoose from 'mongoose';
 import bcrypt from 'bcryptjs';
 
+const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+
 const userSchema = new mongoose.Schema(
   {
     name: {
       type: String,
       required: [true, 'Name is required'],
       trim: true,
-      maxlength: 80,
+      minlength: [2, 'Name must be at least 2 characters long'],
+      maxlength: [50, 'Name cannot exceed 50 characters'],
     },
     email: {
       type: String,
@@ -15,7 +18,7 @@ const userSchema = new mongoose.Schema(
       unique: true,
       lowercase: true,
       trim: true,
-      match: [/^\S+@\S+\.\S+$/, 'Invalid email address'],
+      match: [emailRegex, 'Please provide a valid email address'],
     },
     passwordHash: {
       type: String,

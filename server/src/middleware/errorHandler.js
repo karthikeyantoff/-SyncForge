@@ -14,7 +14,7 @@ export function errorHandler(err, _req, res, _next) {
   if (err.code === 11000) {
     statusCode = 409;
     const field = Object.keys(err.keyValue || {})[0] || 'field';
-    message = `${field.charAt(0).toUpperCase() + field.slice(1)} already exists`;
+    message = `${field.charAt(0).toUpperCase() + field.slice(1)} is already registered`;
   }
 
   // Handle Mongoose CastError (invalid ObjectId)
@@ -23,10 +23,17 @@ export function errorHandler(err, _req, res, _next) {
     message = 'Resource not found';
   }
 
+  // Handle Mongoose Schema Validation error
+  if (err.name === 'ValidationError') {
+    statusCode = 400;
+    const firstErr = Object.values(err.errors || {})[0];
+    message = firstErr?.message || 'Database validation failed';
+  }
+
   // Handle Zod validation errors
   if (err.name === 'ZodError') {
     statusCode = 400;
-    message = 'Validation error';
+    message = err.errors?.[0]?.message || 'Validation error';
     details = err.errors?.map((e) => ({
       field: e.path.join('.'),
       message: e.message,

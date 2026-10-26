@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { X, FolderPlus, Sparkles, CheckSquare } from 'lucide-react';
+import { X, FolderPlus, Sparkles, AlertCircle } from 'lucide-react';
 
 export default function CreateBoardModal({ onClose, onCreate }) {
   const [title, setTitle] = useState('');
@@ -8,9 +8,14 @@ export default function CreateBoardModal({ onClose, onCreate }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
+  const isTitleValid = title.trim().length >= 3 && title.trim().length <= 100;
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!title.trim()) return;
+    if (!isTitleValid) {
+      setError('Board title must be between 3 and 100 characters long');
+      return;
+    }
 
     setLoading(true);
     setError('');
@@ -52,35 +57,51 @@ export default function CreateBoardModal({ onClose, onCreate }) {
         </div>
 
         {error && (
-          <div className="mt-4 rounded-xl bg-rose-500/10 border border-rose-500/30 p-3 text-xs text-rose-400">
-            {error}
+          <div className="mt-4 flex items-center gap-2 rounded-xl bg-rose-500/10 border border-rose-500/30 p-3 text-xs text-rose-400">
+            <AlertCircle className="h-4 w-4 flex-shrink-0" />
+            <span>{error}</span>
           </div>
         )}
 
         <form onSubmit={handleSubmit} className="mt-5 space-y-4">
           <div>
-            <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1.5">
-              Board Title <span className="text-rose-400">*</span>
-            </label>
+            <div className="flex items-center justify-between mb-1.5">
+              <label className="text-xs font-semibold uppercase tracking-wider text-slate-400">
+                Board Title <span className="text-rose-400">*</span>
+              </label>
+              <span className={`text-[10px] font-mono ${title.length > 100 ? 'text-rose-400 font-bold' : 'text-slate-500'}`}>
+                {title.length}/100
+              </span>
+            </div>
             <input
               type="text"
               placeholder="e.g. Q4 Sprint Roadmap"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               required
+              maxLength={100}
               autoFocus
               className="w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-white placeholder-slate-500 focus:border-indigo-500 focus:outline-none"
             />
+            {title && title.trim().length < 3 && (
+              <p className="mt-1 text-[11px] text-rose-400">Title must be at least 3 characters long</p>
+            )}
           </div>
 
           <div>
-            <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1.5">
-              Description (Optional)
-            </label>
+            <div className="flex items-center justify-between mb-1.5">
+              <label className="text-xs font-semibold uppercase tracking-wider text-slate-400">
+                Description (Optional)
+              </label>
+              <span className="text-[10px] font-mono text-slate-500">
+                {description.length}/500
+              </span>
+            </div>
             <textarea
               placeholder="What is this workspace focused on?"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
+              maxLength={500}
               rows={2}
               className="w-full rounded-xl border border-slate-700 bg-slate-950 p-3 text-sm text-white placeholder-slate-500 focus:border-indigo-500 focus:outline-none resize-none"
             />
@@ -117,8 +138,8 @@ export default function CreateBoardModal({ onClose, onCreate }) {
             </button>
             <button
               type="submit"
-              disabled={loading || !title.trim()}
-              className="rounded-xl bg-indigo-600 px-5 py-2 text-xs font-bold text-white hover:bg-indigo-500 disabled:opacity-50 transition-colors"
+              disabled={loading || !isTitleValid}
+              className="rounded-xl bg-indigo-600 px-5 py-2 text-xs font-bold text-white hover:bg-indigo-500 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
             >
               {loading ? 'Creating...' : 'Create Workspace'}
             </button>

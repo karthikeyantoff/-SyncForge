@@ -7,7 +7,7 @@ const app = createApp();
 async function createUser(email, name = 'User') {
   const res = await request(app)
     .post('/api/auth/register')
-    .send({ name, email, password: 'password123' });
+    .send({ name, email, password: 'SyncForge2026!' });
   return { token: res.body.token, user: res.body.user };
 }
 

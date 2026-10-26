@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { X, UserPlus, Shield, User, Trash2, LogOut, AlertCircle } from 'lucide-react';
+import { useState, useMemo } from 'react';
+import { X, UserPlus, Shield, User, Trash2, LogOut, AlertCircle, CheckCircle2 } from 'lucide-react';
 
 export default function MemberModal({
   board,
@@ -15,15 +15,21 @@ export default function MemberModal({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
+  const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+  const isEmailValid = useMemo(() => emailRegex.test(email.trim()), [email]);
+
   const handleInvite = async (e) => {
     e.preventDefault();
-    if (!email.trim()) return;
+    if (!isEmailValid) {
+      setError('Please provide a valid email address (e.g. name@company.com)');
+      return;
+    }
 
     setLoading(true);
     setError('');
 
     try {
-      await onAddMember(email.trim(), role);
+      await onAddMember(email.trim().toLowerCase(), role);
       setEmail('');
     } catch (err) {
       setError(err.message);
@@ -63,7 +69,7 @@ export default function MemberModal({
 
         {/* Invite Form (Owner Only) */}
         {isOwner && (
-          <form onSubmit={handleInvite} className="mt-4 border-b border-slate-800 pb-4">
+          <form onSubmit={handleInvite} className="mt-4 border-b border-slate-800 pb-4" noValidate>
             <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1.5">
               Invite by Email
             </label>
@@ -74,7 +80,11 @@ export default function MemberModal({
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                className="flex-1 rounded-xl border border-slate-700 bg-slate-950 px-3 py-2 text-xs text-white placeholder-slate-500 focus:border-indigo-500 focus:outline-none"
+                className={`flex-1 rounded-xl border bg-slate-950 px-3 py-2 text-xs text-white placeholder-slate-500 focus:outline-none transition-colors ${
+                  email && !isEmailValid
+                    ? 'border-rose-500/60 focus:border-rose-500'
+                    : 'border-slate-700 focus:border-indigo-500'
+                }`}
               />
               <select
                 value={role}
@@ -86,13 +96,16 @@ export default function MemberModal({
               </select>
               <button
                 type="submit"
-                disabled={loading || !email.trim()}
-                className="flex items-center gap-1.5 rounded-xl bg-indigo-600 px-4 py-2 text-xs font-bold text-white hover:bg-indigo-500 disabled:opacity-50 transition-colors"
+                disabled={loading || !isEmailValid}
+                className="flex items-center gap-1.5 rounded-xl bg-indigo-600 px-4 py-2 text-xs font-bold text-white hover:bg-indigo-500 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
               >
                 <UserPlus className="h-4 w-4" />
                 Invite
               </button>
             </div>
+            {email && !isEmailValid && (
+              <p className="mt-1 text-[11px] text-rose-400">Invalid email format</p>
+            )}
           </form>
         )}
 

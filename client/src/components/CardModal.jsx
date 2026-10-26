@@ -23,6 +23,8 @@ export default function CardModal({
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
 
+  const isTitleValid = title.trim().length >= 2 && title.trim().length <= 280;
+
   const handleAddLabel = () => {
     if (!newTagText.trim()) return;
     if (labels.some((l) => l.text.toLowerCase() === newTagText.trim().toLowerCase())) return;
@@ -36,7 +38,10 @@ export default function CardModal({
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!title.trim()) return;
+    if (!isTitleValid) {
+      setError('Card title must be between 2 and 280 characters');
+      return;
+    }
 
     setSaving(true);
     setError('');
@@ -45,7 +50,7 @@ export default function CardModal({
       await onSave({
         _id: card._id,
         title: title.trim(),
-        description,
+        description: description.trim(),
         priority,
         assignee: assignee || null,
         dueDate: dueDate ? new Date(dueDate) : null,
@@ -80,13 +85,20 @@ export default function CardModal({
             {isViewer ? (
               <h2 className="text-xl font-bold text-white">{card.title}</h2>
             ) : (
-              <input
-                type="text"
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                placeholder="Card title..."
-                className="w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-1.5 text-lg font-bold text-white focus:border-indigo-500 focus:outline-none"
-              />
+              <div>
+                <input
+                  type="text"
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                  maxLength={280}
+                  placeholder="Card title..."
+                  className="w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-1.5 text-lg font-bold text-white focus:border-indigo-500 focus:outline-none"
+                />
+                <div className="mt-1 flex justify-between text-[11px] text-slate-500">
+                  <span>{title.trim().length < 2 && title.length > 0 ? 'Minimum 2 characters' : ''}</span>
+                  <span className="font-mono">{title.length}/280</span>
+                </div>
+              </div>
             )}
           </div>
 
@@ -180,9 +192,16 @@ export default function CardModal({
 
           {/* Description */}
           <div>
-            <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1.5">
-              Description
-            </label>
+            <div className="flex items-center justify-between mb-1.5">
+              <label className="text-xs font-semibold uppercase tracking-wider text-slate-400">
+                Description
+              </label>
+              {!isViewer && (
+                <span className="text-[10px] font-mono text-slate-500">
+                  {description.length}/5000
+                </span>
+              )}
+            </div>
             {isViewer ? (
               <div className="min-h-[90px] rounded-xl border border-slate-800 bg-slate-950/50 p-3 text-sm text-slate-300 whitespace-pre-wrap">
                 {description || <span className="text-slate-600 italic">No description provided</span>}
@@ -191,6 +210,7 @@ export default function CardModal({
               <textarea
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
+                maxLength={5000}
                 placeholder="Add more details, checklists, acceptance criteria..."
                 rows={4}
                 className="w-full rounded-xl border border-slate-700 bg-slate-950 p-3 text-sm text-slate-200 placeholder-slate-500 focus:border-indigo-500 focus:outline-none"
@@ -235,6 +255,7 @@ export default function CardModal({
                   type="text"
                   placeholder="New label tag..."
                   value={newTagText}
+                  maxLength={30}
                   onChange={(e) => setNewTagText(e.target.value)}
                   className="rounded-lg border border-slate-700 bg-slate-950 px-2.5 py-1 text-xs text-slate-200 focus:border-indigo-500 focus:outline-none"
                   onKeyDown={(e) => {
@@ -299,8 +320,8 @@ export default function CardModal({
               {!isViewer && (
                 <button
                   type="submit"
-                  disabled={saving || !title.trim()}
-                  className="rounded-xl bg-indigo-600 px-5 py-2 text-xs font-bold text-white hover:bg-indigo-500 disabled:opacity-50 transition-colors"
+                  disabled={saving || !isTitleValid}
+                  className="rounded-xl bg-indigo-600 px-5 py-2 text-xs font-bold text-white hover:bg-indigo-500 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
                 >
                   {saving ? 'Saving...' : 'Save Changes'}
                 </button>
