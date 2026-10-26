@@ -1,0 +1,24 @@
+{
+  "name": "syncforge",
+  "version": "1.0.0",
+  "private": true,
+  "description": "SyncForge — Real-Time Collaborative Project Workspace (MERN + Socket.IO + OCC)",
+  "workspaces": [
+    "server",
+    "client"
+  ],
+  "type": "module",
+  "scripts": {
+    "dev": "concurrently -n \"server,client\" -c \"blue,green\" \"npm run dev --workspace server\" \"npm run dev --workspace client\"",
+    "dev:server": "npm run dev --workspace server",
+    "dev:client": "npm run dev --workspace client",
+    "build": "npm run build --workspace client",
+    "start": "npm start --workspace server",
+    "test": "npm test --workspace server"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  },
+  "author": "Karthikeyan T <karthikeyantoff@gmail.com>",
+  "license": "MIT"
+}

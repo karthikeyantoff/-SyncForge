@@ -1,0 +1,23 @@
+services:
+  - type: web
+    name: syncforge
+    runtime: node
+    plan: free
+    buildCommand: npm install --include=dev && npm run build --workspace client
+    startCommand: npm start --workspace server
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: JWT_SECRET
+        generateValue: true
+      - key: MONGO_URI
+        sync: false
+      - key: CLOUDINARY_CLOUD_NAME
+        sync: false
+      - key: CLOUDINARY_API_KEY
+        sync: false
+      - key: CLOUDINARY_API_SECRET
+        sync: false
+      - key: CLOUDINARY_FOLDER
+        value: mern_stack_project_storage/SyncForge_storage
