@@ -38,7 +38,29 @@
 
 ---
 
-## Architectural Highlights
+## 📸 Production Application Preview
+
+### 1. Secure Authentication & Verification Portal
+![Login & Authentication Screen](./screenshots/01-login-screen.png)
+*Modern dark-mode authentication with RFC-compliant email validation, JWT session security, and dynamic password checklist.*
+
+### 2. Workspace & Multi-Board Dashboard
+![Workspace Dashboard](./screenshots/02-workspace-dashboard.png)
+*Centralized management hub displaying all active workspaces, collaborator counts, ownership badges, and one-click board creation.*
+
+### 3. Real-Time Kanban Workspace ($O(1)$ Drag-and-Drop)
+![Real-Time Kanban Board](./screenshots/03-kanban-board.png)
+*High-concurrency sprint board featuring dynamic multi-column workflows (`Backlog`, `To Do`, `In Progress`, `In Review`), @dnd-kit drag-and-drop, and sub-50ms Socket.IO real-time synchronization.*
+
+### 4. Role-Based Access Control (RBAC) & Collaborator Management
+![Collaborator RBAC Modal](./screenshots/04-collaborator-rbac-modal.png)
+*Granular permission control modal allowing Workspace Owners to invite teammates via email and assign Member (editor) or Viewer (read-only) roles.*
+
+### 5. Live Serverless API Health & Author Verification
+![Live API Server Health Check](./screenshots/05-api-health-check.png)
+*Authoritative Vercel serverless backend health endpoint confirming live database connectivity, versioning, and Forward Deployed Engineer verification.*
+
+---
 
 ```mermaid
 sequenceDiagram
