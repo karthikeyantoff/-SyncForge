@@ -1,6 +1,25 @@
 # SyncForge — Real-Time Collaborative Project Workspace
 
-SyncForge is an industry-oriented full-stack collaborative project management platform built on the MERN stack (MongoDB, Express, React, Node.js) with real-time WebSocket synchronization via Socket.IO, fractional-position list and task ordering, and Optimistic Concurrency Control (OCC).
+> **A modern, high-concurrency project management platform engineered with the MERN stack, Socket.IO real-time bi-directional events, $O(1)$ fractional positioning, Cloudinary CDN attachments, and Optimistic Concurrency Control (OCC).**
+
+---
+
+### 🌐 Live Production Deployments
+
+| Component | Platform | Live URL | Status |
+| :--- | :---: | :--- | :---: |
+| **Client Application (Frontend)** | Vercel | [https://syncforge-client.vercel.app/](https://syncforge-client.vercel.app/) | ![Operational](https://img.shields.io/badge/Status-Operational-brightgreen) |
+| **API Server & WebSockets (Backend)** | Vercel | [https://sync-forge-serverside.vercel.app/](https://sync-forge-serverside.vercel.app/) | ![Online](https://img.shields.io/badge/Status-Online-brightgreen) |
+| **System Health Check** | Vercel API | [https://sync-forge-serverside.vercel.app/health](https://sync-forge-serverside.vercel.app/health) | ![Healthy](https://img.shields.io/badge/Health-200%20OK-brightgreen) |
+
+---
+
+### 👨‍💻 Author & Forward Deployed Engineer
+
+- **Engineer:** **Karthikeyan T**
+- **Email:** [karthikeyantoff@gmail.com](mailto:karthikeyantoff@gmail.com)
+- **GitHub Profile:** [@karthikeyantoff](https://github.com/karthikeyantoff)
+- **Repository:** [karthikeyantoff/-SyncForge](https://github.com/karthikeyantoff/-SyncForge.git)
 
 ---
 
@@ -141,20 +160,27 @@ npm test
 
 ---
 
-## Deployment (Render)
+## Deployment Architecture (Vercel & Render)
 
-This project contains a verified `render.yaml` blueprint. To deploy to Render:
+### Vercel Production Deployment (Live)
+- **Frontend SPA:** Deployed on Vercel at [https://syncforge-client.vercel.app/](https://syncforge-client.vercel.app/). Includes reverse proxy configuration in `client/vercel.json` to seamlessly route `/api/*` and WebSocket handshakes directly to the serverless backend.
+- **Backend Service:** Deployed on Vercel at [https://sync-forge-serverside.vercel.app/](https://sync-forge-serverside.vercel.app/) connecting directly to MongoDB Atlas cluster `cluster0.zibm66x.mongodb.net/SyncForge_db` and Cloudinary storage.
 
-1. Push this repository to your GitHub account (`https://github.com/karthikeyantoff/SyncForge`).
-2. Log in to [Render](https://dashboard.render.com).
-3. Click **New +** -> **Blueprint**.
-4. Select your `SyncForge` repository.
-5. Provide your `MONGO_URI` Atlas connection string when prompted.
-6. Render will automatically install dependencies, build the React client, and start the unified Express + Socket.IO web service.
+### Render Blueprint Deployment (Optional)
+This repository also contains a verified `render.yaml` infrastructure-as-code blueprint:
+1. Connect this repository to your [Render Dashboard](https://dashboard.render.com).
+2. Click **New +** -> **Blueprint** and select `karthikeyantoff/-SyncForge`.
+3. Provide your `MONGO_URI` Atlas connection string when prompted.
+4. Render automatically runs `npm install`, builds the React client, and boots the unified Express & Socket.IO web service.
 
 ---
 
-## Author & License
+## Author & Forward Deployed Engineer
 
-- **Architect & Engineer:** Karthikeyan T (`karthikeyantoff@gmail.com`)
+- **Author & Forward Deployed Engineer:** **Karthikeyan T**
+- **Email:** [karthikeyantoff@gmail.com](mailto:karthikeyantoff@gmail.com)
+- **GitHub:** [@karthikeyantoff](https://github.com/karthikeyantoff)
+- **Project Repository:** [https://github.com/karthikeyantoff/-SyncForge.git](https://github.com/karthikeyantoff/-SyncForge.git)
+- **Live Client Application:** [https://syncforge-client.vercel.app/](https://syncforge-client.vercel.app/)
+- **Live Server API:** [https://sync-forge-serverside.vercel.app/](https://sync-forge-serverside.vercel.app/)
 - **License:** MIT License
