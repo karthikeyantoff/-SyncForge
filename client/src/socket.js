@@ -4,7 +4,17 @@ let socketInstance = null;
 
 export function getSocket() {
   if (!socketInstance) {
-    const socketUrl = import.meta.env.VITE_SOCKET_URL || window.location.origin;
+    let socketUrl = (import.meta.env.VITE_SOCKET_URL || '').trim();
+
+    if (socketUrl) {
+      if (!socketUrl.startsWith('http://') && !socketUrl.startsWith('https://')) {
+        socketUrl = `https://${socketUrl}`;
+      }
+      socketUrl = socketUrl.replace(/\/+$/, '');
+    } else {
+      socketUrl = 'https://sync-forge-serverside.vercel.app';
+    }
+
     socketInstance = io(socketUrl, {
       withCredentials: true,
       autoConnect: true,
