@@ -32,7 +32,7 @@ export function createApp() {
     })
   );
 
-  // Dynamic CORS configuration (supports localhost, custom client domain, and any *.vercel.app deployment)
+  // Dynamic CORS configuration (accepts localhost and any *.vercel.app domain)
   app.use(
     cors({
       origin: (origin, callback) => {
@@ -50,9 +50,12 @@ export function createApp() {
       },
       credentials: true,
       methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-      allowedHeaders: ['Content-Type', 'Authorization'],
+      allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
     })
   );
+
+  // Pre-flight OPTIONS handling
+  app.options('*', cors());
 
   app.use(express.json({ limit: '10mb' }));
   app.use(express.urlencoded({ extended: true, limit: '10mb' }));
@@ -89,7 +92,7 @@ export function createApp() {
       name: 'SyncForge API Server',
       status: 'online',
       version: '1.0.0',
-      docs: '/api/health',
+      health: '/health',
       author: 'Karthikeyan T',
     });
   });
@@ -97,11 +100,18 @@ export function createApp() {
   // Apply general API rate limiter
   app.use('/api', apiLimiter);
 
-  // Mount API modules
+  // Mount API modules under both /api/... and root /... for maximum client compatibility
   app.use('/api/auth', authRoutes);
+  app.use('/auth', authRoutes);
+
   app.use('/api/boards', boardRoutes);
+  app.use('/boards', boardRoutes);
+
   app.use('/api/lists', listRoutes);
+  app.use('/lists', listRoutes);
+
   app.use('/api/cards', cardRoutes);
+  app.use('/cards', cardRoutes);
 
   // Serve static client bundle if client/dist exists (unified deployment)
   if (env.nodeEnv === 'production' && fs.existsSync(clientDist)) {
